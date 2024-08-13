@@ -5,30 +5,25 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.spark</groupId>
-    <artifactId>ProductSystem.parent</artifactId>
+    <artifactId>stk-task</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.7.RELEASE</version>
+    </parent>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <spring-boot.version>1.5.7.RELEASE</spring-boot.version>
+        <src.dir>src/main/java</src.dir>
     </properties>
-
-    <packaging>pom</packaging>
 
     <modules>
         <module>entities</module>
+        <module>productsManagement</module>
     </modules>
 
-    <dependencyManagement>
-        <dependencies>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <version>1.5.7.RELEASE</version>
-            </dependency>
-
-        </dependencies>
-
-    </dependencyManagement>
 </project>
