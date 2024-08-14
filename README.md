@@ -9,6 +9,15 @@
 
 ## How to run
 ```bash
+# From the kafka source code
+# Start the ZooKeeper service
+bin/zookeeper-server-start.sh config/zookeeper.properties
+# Start the Kafka broker service
+bin/kafka-server-start.sh config/server.properties
+
+# Create a topic
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --replication-factor 1 --partitions 1 --topic products
+
 mvn clean package
 java -jar productsManagement/target/productsManagement-1.0-SNAPSHOT.war
 ```
