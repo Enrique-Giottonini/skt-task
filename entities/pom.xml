@@ -6,6 +6,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>common-entities</artifactId>
     <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
     <parent>
         <groupId>com.spark</groupId>
