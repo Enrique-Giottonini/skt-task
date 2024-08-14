@@ -1,4 +1,4 @@
-package com.spark;
+package com.spark.controllers;
 
 import com.spark.entities.Product;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+import com.spark.services.ProductService;
 
 import java.util.List;
 
@@ -18,11 +19,12 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductController {
 
-    private final List<Product> productList;
+    private final ProductService productService;
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("listOfProduct", productList);
+        List<Product> listProduct = productService.findAll();
+        model.addAttribute("listOfProduct", listProduct);
         return "product-list";
     }
 
@@ -35,10 +37,9 @@ public class ProductController {
     @PostMapping("/new")
     public RedirectView addProduct(@ModelAttribute("product") Product product, RedirectAttributes redirectAttributes) {
         final RedirectView redirectView = new RedirectView("/product/new", true);
-        productList.add(product);
-        boolean isSaved = productList.contains(product);
-        if (isSaved) redirectAttributes.addFlashAttribute("savedProduct", product);
-        redirectAttributes.addFlashAttribute("addProductSuccess", isSaved);
+        Product savedProduct = productService.save(product);
+        redirectAttributes.addFlashAttribute("savedProduct", savedProduct);
+        redirectAttributes.addFlashAttribute("addProductSuccess", true);
         return redirectView;
     }
 }
