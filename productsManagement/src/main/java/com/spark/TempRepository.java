@@ -9,6 +9,7 @@ import java.util.List;
 
 @Configuration
 public class TempRepository {
+
     @Bean
     public List<Product> productList() {
         List<Product> productList = new ArrayList<>();
