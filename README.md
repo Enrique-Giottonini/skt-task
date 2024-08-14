@@ -8,3 +8,14 @@
 - Kafka
 
 ## How to run
+```bash
+mvn clean package
+java -jar productsManagement/target/productsManagement-1.0-SNAPSHOT.war
+```
+
+Front app: http://localhost:8881
+- GET  /product
+- GET  /product/new
+- POST /product/new
+
+
