@@ -1,6 +1,8 @@
 package com.spark.service.products.services;
 
 import com.spark.entities.domain.Product;
+import com.spark.entities.dto.ProductListMessage;
+import com.spark.entities.dto.ProductMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -15,7 +17,7 @@ import java.util.List;
 public class ProductService {
 
     private final List<Product> productList;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, ProductListMessage> kafkaTemplate;
 
 
     public void addProduct(Product deserializePlz) {
@@ -25,18 +27,19 @@ public class ProductService {
 
     public void notifyUpdatedList() {
         // TODO: Check this async(?) flow
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("listAllProducts", "product.list: " + productList);
-        future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+        ProductListMessage message = new ProductListMessage("list.update", productList);
+        ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
+        future.addCallback(new ListenableFutureCallback<SendResult<String, ProductListMessage>>() {
             @Override
-            public void onSuccess(SendResult<String, String> result) {
-                System.out.println("success");
+            public void onSuccess(SendResult<String, ProductListMessage> result) {
+                System.out.println("Sent message=[" + message +
+                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
             }
-
             @Override
             public void onFailure(Throwable ex) {
-                System.out.println("failed");
+                System.out.println("Unable to send message=[" + message +
+                        "] due to : " + ex.getMessage());
             }
         });
-        System.out.println("Current products in memory: " + productList);
     }
 }
