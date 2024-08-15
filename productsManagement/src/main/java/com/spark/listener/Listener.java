@@ -1,13 +1,13 @@
-package com.spark.service.products.listener;
+package com.spark.listener;
 
 import com.spark.entities.Product;
-import com.spark.service.products.services.ProductService;
+import com.spark.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Component
@@ -15,10 +15,10 @@ public class Listener {
 
     private final ProductService productService;
 
-    @KafkaListener(id = "productsService", topics = "newProduct", group = "group1")
+    @KafkaListener(id = "productsManagement", topics = "listAllProducts", group = "group1")
     public void listen(ConsumerRecord<?, ?> record) {
-        System.out.println("newProduct: " + record);
-        productService.addProduct(new Product(999, "temp product " + LocalDateTime.now(), "deserialize plz", 999.99));
+        System.out.println("listAllProducts: " + record);
+        productService.updateList(Arrays.asList(new Product(111, record.toString(), "deserialize", 919.91)));
     }
 
 }

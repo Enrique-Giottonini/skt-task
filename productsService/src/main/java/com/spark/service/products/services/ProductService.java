@@ -1,4 +1,4 @@
-package com.spark.services;
+package com.spark.service.products.services;
 
 import com.spark.entities.Product;
 import lombok.RequiredArgsConstructor;
@@ -17,18 +17,19 @@ public class ProductService {
     private final List<Product> productList;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public List<Product> findAll() {
-        return productList;
+
+    public void addProduct(Product deserializePlz) {
+        productList.add(deserializePlz);
+        notifyUpdatedList();
     }
 
-    public Product save(Product product) {
+    public void notifyUpdatedList() {
         // TODO: Check this async(?) flow
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("newProduct", "product.creation: " + product);
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("listAllProducts", "product.list: " + productList);
         future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
             @Override
             public void onSuccess(SendResult<String, String> result) {
                 System.out.println("success");
-                productList.add(product);
             }
 
             @Override
@@ -36,11 +37,5 @@ public class ProductService {
                 System.out.println("failed");
             }
         });
-        return product;
-    }
-
-    public void updateList(List<Product> deserialize) {
-        productList.clear();
-        productList.addAll(deserialize);
     }
 }
