@@ -1,6 +1,7 @@
 package com.spark.services;
 
-import com.spark.entities.Product;
+import com.spark.entities.domain.Product;
+import com.spark.entities.dto.ProductMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -15,7 +16,7 @@ import java.util.List;
 public class ProductService {
 
     private final List<Product> productList;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, ProductMessage> kafkaTemplate;
 
     public List<Product> findAll() {
         return productList;
@@ -23,17 +24,18 @@ public class ProductService {
 
     public Product save(Product product) {
         // TODO: Check this async(?) flow
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("product", "product.creation: " + product);
-        future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+        ProductMessage message = new ProductMessage("product.creation", product);
+        ListenableFuture<SendResult<String, ProductMessage>> future = kafkaTemplate.send("product", message);
+        future.addCallback(new ListenableFutureCallback<SendResult<String, ProductMessage>>() {
             @Override
-            public void onSuccess(SendResult<String, String> result) {
-                System.out.println("success");
-                productList.add(product);
+            public void onSuccess(SendResult<String, ProductMessage> result) {
+                System.out.println("Sent message=[" + message +
+                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
             }
-
             @Override
             public void onFailure(Throwable ex) {
-                System.out.println("failed");
+                System.out.println("Unable to send message=[" + message +
+                        "] due to : " + ex.getMessage());
             }
         });
         return product;

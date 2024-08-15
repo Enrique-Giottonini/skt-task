@@ -1,6 +1,6 @@
 package com.spark.service.products;
 
-import com.spark.entities.Product;
+import com.spark.entities.domain.Product;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

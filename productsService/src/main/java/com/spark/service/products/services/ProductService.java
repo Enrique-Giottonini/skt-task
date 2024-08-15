@@ -1,6 +1,6 @@
 package com.spark.service.products.services;
 
-import com.spark.entities.Product;
+import com.spark.entities.domain.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -37,5 +37,6 @@ public class ProductService {
                 System.out.println("failed");
             }
         });
+        System.out.println("Current products in memory: " + productList);
     }
 }

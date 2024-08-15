@@ -1,6 +1,6 @@
 package com.spark.controllers;
 
-import com.spark.entities.Product;
+import com.spark.entities.domain.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

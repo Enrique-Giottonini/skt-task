@@ -1,6 +1,7 @@
 package com.spark.service.products.listener;
 
-import com.spark.entities.Product;
+import com.spark.entities.domain.Product;
+import com.spark.entities.dto.ProductMessage;
 import com.spark.service.products.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -16,9 +17,11 @@ public class Listener {
     private final ProductService productService;
 
     @KafkaListener(id = "productsService", topics = "product", group = "productDb")
-    public void listen(ConsumerRecord<?, ?> record) {
-        System.out.println("newProduct: " + record);
-        productService.addProduct(new Product(999, "temp product " + LocalDateTime.now(), "deserialize plz", 999.99));
+    public void listen(ConsumerRecord<String, ProductMessage> record) {
+        ProductMessage message = record.value();
+        System.out.println("Received ProductMessage: " + message);
+        if (message != null && "product.creation".equals(message.getAction())) {
+            productService.addProduct(message.getProduct());
+        }
     }
-
 }

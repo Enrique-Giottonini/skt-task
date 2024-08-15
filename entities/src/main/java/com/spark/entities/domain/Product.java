@@ -1,4 +1,4 @@
-package com.spark.entities;
+package com.spark.entities.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

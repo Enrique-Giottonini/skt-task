@@ -1,6 +1,6 @@
 package com.spark.listener;
 
-import com.spark.entities.Product;
+import com.spark.entities.domain.Product;
 import com.spark.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
