@@ -15,7 +15,7 @@ public class Listener {
 
     private final ProductService productService;
 
-    @KafkaListener(id = "productsManagement", topics = "listAllProducts", group = "group1")
+    @KafkaListener(id = "productsManagement", topics = "listAllProducts", group = "productManagementWebApp")
     public void listen(ConsumerRecord<?, ?> record) {
         System.out.println("listAllProducts: " + record);
         productService.updateList(Arrays.asList(new Product(111, record.toString(), "deserialize", 919.91)));

@@ -24,7 +24,7 @@ java -jar productsManagement/target/productsManagement-1.0-SNAPSHOT.war
 java -jar productsService/target/productsService-1.0-SNAPSHOT.jar 
 
 # Manual monitoring of communication
-bin/kafka-console-consumer.sh --topic newProduct --from-beginning --bootstrap-server localhost:9092
+bin/kafka-console-consumer.sh --topic product --from-beginning --bootstrap-server localhost:9092
 bin/kafka-console-consumer.sh --topic listAllProducts --from-beginning --bootstrap-server localhost:9092
 ```
 

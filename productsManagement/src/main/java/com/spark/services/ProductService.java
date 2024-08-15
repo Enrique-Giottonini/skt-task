@@ -23,7 +23,7 @@ public class ProductService {
 
     public Product save(Product product) {
         // TODO: Check this async(?) flow
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("newProduct", "product.creation: " + product);
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("product", "product.creation: " + product);
         future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
             @Override
             public void onSuccess(SendResult<String, String> result) {

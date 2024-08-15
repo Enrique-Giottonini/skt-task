@@ -15,7 +15,7 @@ public class Listener {
 
     private final ProductService productService;
 
-    @KafkaListener(id = "productsService", topics = "newProduct", group = "group1")
+    @KafkaListener(id = "productsService", topics = "product", group = "productDb")
     public void listen(ConsumerRecord<?, ?> record) {
         System.out.println("newProduct: " + record);
         productService.addProduct(new Product(999, "temp product " + LocalDateTime.now(), "deserialize plz", 999.99));
