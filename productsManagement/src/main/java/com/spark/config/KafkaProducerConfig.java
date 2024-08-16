@@ -1,5 +1,6 @@
 package com.spark.config;
 
+import com.spark.entities.dto.ProductListMessage;
 import com.spark.entities.dto.ProductMessage;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -22,13 +23,8 @@ public class KafkaProducerConfig {
     @Value(value = "${kafka.bootstrapAddress}")
     private String bootstrapAddress;
 
-    @Bean
-    public ProducerFactory<String, ProductMessage> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfigs());
-    }
-
-    @Bean
-    public Map<String, Object> producerConfigs() {
+    // Common producer configurations
+    private Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(ProducerConfig.RETRIES_CONFIG, 0);
@@ -40,8 +36,26 @@ public class KafkaProducerConfig {
         return props;
     }
 
+    // Producer factory for ProductMessage
     @Bean
-    public KafkaTemplate<String, ProductMessage> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+    public ProducerFactory<String, ProductMessage> productMessageProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs(), new StringSerializer(), new JsonSerializer<>());
     }
-}
+
+    // Kafka template for ProductMessage
+    @Bean
+    public KafkaTemplate<String, ProductMessage> productMessageKafkaTemplate() {
+        return new KafkaTemplate<>(productMessageProducerFactory());
+    }
+
+    // Producer factory for SimpleEvent which is a String
+    @Bean
+    public ProducerFactory<String, ProductListMessage> productMessageListProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs(), new StringSerializer(), new JsonSerializer<>());
+    }
+
+    // Kafka template for ProductListMessage
+    @Bean
+    public KafkaTemplate<String, ProductListMessage> productMessageListKafkaTemplate() {
+        return new KafkaTemplate<>(productMessageListProducerFactory());
+    }}

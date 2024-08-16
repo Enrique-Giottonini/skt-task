@@ -1,6 +1,7 @@
 package com.spark.service.products.listener;
 
 import com.spark.entities.domain.Product;
+import com.spark.entities.dto.ProductListMessage;
 import com.spark.entities.dto.ProductMessage;
 import com.spark.service.products.services.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +17,23 @@ public class Listener {
 
     private final ProductService productService;
 
-    @KafkaListener(id = "productsService", topics = "product", group = "productDb")
-    public void listen(ConsumerRecord<String, ProductMessage> record) {
-        ProductMessage message = record.value();
-        System.out.println("Received ProductMessage: " + message);
-        if (message != null && "product.creation".equals(message.getAction())) {
-            productService.addProduct(message.getProduct());
+    @KafkaListener(id = "productsService", topics = "product", containerFactory = "kafkaProductMessageListenerContainerFactory")
+    public void listenProduct(ProductMessage payload) {
+        System.out.println("Received new product");
+        if (payload != null && "product.creation".equals(payload.getAction())) {
+            productService.addProduct(payload.getProduct());
+        }
+    }
+
+    @KafkaListener(id = "productListService", topics = "listOfProducts", containerFactory = "kafkaProductListMessageListenerContainerFactory")
+    public void listenProductListEvents(ProductListMessage payload) {
+        switch (payload.getAction()) {
+            case "list.subscribe":
+                productService.resendList();
+                break;
+            case "list.update":
+            case "list.resend":
+                break;
         }
     }
 }

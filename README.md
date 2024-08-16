@@ -16,8 +16,8 @@ bin/zookeeper-server-start.sh config/zookeeper.properties
 bin/kafka-server-start.sh config/server.properties
 
 # Create a topics for communication
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --replication-factor 1 --partitions 1 --topic newProduct
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --replication-factor 1 --partitions 1 --topic listAllProducts
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --replication-factor 1 --partitions 1 --topic product
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --replication-factor 1 --partitions 1 --topic listOfProducts
 
 mvn clean package
 java -jar productsManagement/target/productsManagement-1.0-SNAPSHOT.war
@@ -25,7 +25,7 @@ java -jar productsService/target/productsService-1.0-SNAPSHOT.jar
 
 # Manual monitoring of communication
 bin/kafka-console-consumer.sh --topic product --from-beginning --bootstrap-server localhost:9092
-bin/kafka-console-consumer.sh --topic listAllProducts --from-beginning --bootstrap-server localhost:9092
+bin/kafka-console-consumer.sh --topic listOfProducts --from-beginning --bootstrap-server localhost:9092
 ```
 
 Front app: http://localhost:8881

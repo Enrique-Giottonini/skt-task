@@ -16,16 +16,17 @@ import java.util.List;
 public class ProductService {
 
     private final List<Product> productList;
-    private final KafkaTemplate<String, ProductMessage> kafkaTemplate;
+    private final KafkaTemplate<String, ProductMessage> productMessageKafkaTemplate;
 
     public List<Product> findAll() {
         return productList;
     }
+    public int count() { return productList.size(); }
 
     public Product save(Product product) {
         // TODO: Check this async(?) flow
         ProductMessage message = new ProductMessage("product.creation", product);
-        ListenableFuture<SendResult<String, ProductMessage>> future = kafkaTemplate.send("product", message);
+        ListenableFuture<SendResult<String, ProductMessage>> future = productMessageKafkaTemplate.send("product", message);
         future.addCallback(new ListenableFutureCallback<SendResult<String, ProductMessage>>() {
             @Override
             public void onSuccess(SendResult<String, ProductMessage> result) {
@@ -45,4 +46,5 @@ public class ProductService {
         productList.clear();
         productList.addAll(deserialize);
     }
+
 }

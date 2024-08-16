@@ -11,6 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductListMessage {
-    private String status;
+    private String action;
     private List<Product> listOfProducts;
 }

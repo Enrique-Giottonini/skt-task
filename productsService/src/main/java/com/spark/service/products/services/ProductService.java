@@ -42,4 +42,23 @@ public class ProductService {
             }
         });
     }
+
+    public void resendList() {
+        // TODO: Check this async(?) flow
+        ProductListMessage message = new ProductListMessage("list.resend", productList);
+        ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
+        future.addCallback(new ListenableFutureCallback<SendResult<String, ProductListMessage>>() {
+            @Override
+            public void onSuccess(SendResult<String, ProductListMessage> result) {
+                System.out.println("Sent message=[" + message +
+                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
+            }
+            @Override
+            public void onFailure(Throwable ex) {
+                System.out.println("Unable to send message=[" + message +
+                        "] due to : " + ex.getMessage());
+            }
+        });
+    }
+
 }
