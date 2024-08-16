@@ -14,7 +14,7 @@
     </parent>
 
     <properties>
-        <start-class>com.spark.WebApplication</start-class>
+        <start-class>com.spark.ProductsManagementApp</start-class>
     </properties>
 
     <dependencies>

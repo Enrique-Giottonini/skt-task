@@ -1,6 +1,6 @@
 package com.spark.service.products.config;
 
-import com.spark.entities.dto.ProductListMessage;
+import com.spark.entities.domain.ProductListMessage;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

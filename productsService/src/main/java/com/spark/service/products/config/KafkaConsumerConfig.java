@@ -1,7 +1,7 @@
         package com.spark.service.products.config;
 
-        import com.spark.entities.dto.ProductListMessage;
-        import com.spark.entities.dto.ProductMessage;
+        import com.spark.entities.domain.ProductListMessage;
+        import com.spark.entities.domain.ProductMessage;
         import org.apache.kafka.clients.consumer.ConsumerConfig;
         import org.apache.kafka.common.serialization.StringDeserializer;
         import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -20,7 +20,6 @@
         import java.util.HashMap;
         import java.util.Map;
 
-
         @Configuration
         @EnableKafka
         public class KafkaConsumerConfig {
@@ -29,32 +28,31 @@
             private String bootstrapAddress;
 
             @Bean
-            KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ProductMessage>> kafkaProductMessageListenerContainerFactory() {
+                KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ProductMessage>> productKafkaListenerContainerFactory() {
                 ConcurrentKafkaListenerContainerFactory<String, ProductMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
-                factory.setConsumerFactory(consumerProductMessageFactory());
+                factory.setConsumerFactory(productConsumerFactory());
                 factory.setConcurrency(1); // TODO: Check this
                 factory.getContainerProperties().setPollTimeout(3000);
                 return factory;
             }
 
             @Bean
-            KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ProductListMessage>> kafkaProductListMessageListenerContainerFactory() {
+            KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ProductListMessage>> productListKafkaListenerContainerFactory() {
                 ConcurrentKafkaListenerContainerFactory<String, ProductListMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
-                factory.setConsumerFactory(consumerProductListMessageFactory());
+                factory.setConsumerFactory(productListConsumerFactory());
                 factory.setConcurrency(1); // TODO: Check this
                 factory.getContainerProperties().setPollTimeout(3000);
                 return factory;
             }
 
 
-
             @Bean
-            public ConsumerFactory<String, ProductMessage> consumerProductMessageFactory() {
+            public ConsumerFactory<String, ProductMessage> productConsumerFactory() {
                 return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(), new JsonDeserializer<>(ProductMessage.class));
             }
 
             @Bean
-            public ConsumerFactory<String, ProductListMessage> consumerProductListMessageFactory() {
+            public ConsumerFactory<String, ProductListMessage> productListConsumerFactory() {
                 return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(), new JsonDeserializer<>(ProductListMessage.class));
             }
 
@@ -69,7 +67,7 @@
                 props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
                 props.put(ConsumerConfig.GROUP_ID_CONFIG, "productDb");
                 props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-                props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+                props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
                 return props;
             }
         }

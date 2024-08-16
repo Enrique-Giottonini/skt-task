@@ -1,8 +1,8 @@
-package com.spark.service.products.services;
+package com.spark.service.products.impl;
 
 import com.spark.entities.domain.Product;
-import com.spark.entities.dto.ProductListMessage;
-import com.spark.entities.dto.ProductMessage;
+import com.spark.entities.domain.ProductListMessage;
+import com.spark.service.products.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -14,14 +14,14 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class ProductService {
+public class ProductServiceImpl implements ProductService {
 
     private final List<Product> productList;
     private final KafkaTemplate<String, ProductListMessage> kafkaTemplate;
 
 
-    public void addProduct(Product deserializePlz) {
-        productList.add(deserializePlz);
+    public void addProduct(Product product) {
+        productList.add(product);
         notifyUpdatedList();
     }
 

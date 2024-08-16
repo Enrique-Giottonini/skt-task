@@ -1,6 +1,6 @@
 package com.spark.config;
 
-import com.spark.entities.dto.ProductListMessage;
+import com.spark.entities.domain.ProductListMessage;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,16 +26,16 @@ public class KafkaConsumerConfig {
     private String bootstrapAddress;
 
     @Bean
-    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ProductListMessage>> kafkaListenerContainerFactory() {
+    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ProductListMessage>> productListKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, ProductListMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(productListConsumerFactory());
         factory.setConcurrency(1); // TODO: Check this
         factory.getContainerProperties().setPollTimeout(3000);
         return factory;
     }
 
     @Bean
-    public ConsumerFactory<String, ProductListMessage> consumerFactory() {
+    public ConsumerFactory<String, ProductListMessage> productListConsumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(), new JsonDeserializer<>(ProductListMessage.class));
     }
 

@@ -1,7 +1,8 @@
-package com.spark.services;
+package com.spark.impl;
 
+import com.spark.ProductService;
 import com.spark.entities.domain.Product;
-import com.spark.entities.dto.ProductMessage;
+import com.spark.entities.domain.ProductMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class ProductService {
+public class ProductServiceImpl implements ProductService {
 
     private final List<Product> productList;
     private final KafkaTemplate<String, ProductMessage> productMessageKafkaTemplate;
@@ -21,7 +22,6 @@ public class ProductService {
     public List<Product> findAll() {
         return productList;
     }
-    public int count() { return productList.size(); }
 
     public Product save(Product product) {
         // TODO: Check this async(?) flow

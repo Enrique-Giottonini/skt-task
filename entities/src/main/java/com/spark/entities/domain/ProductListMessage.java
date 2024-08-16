@@ -1,6 +1,5 @@
-package com.spark.entities.dto;
+package com.spark.entities.domain;
 
-import com.spark.entities.domain.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

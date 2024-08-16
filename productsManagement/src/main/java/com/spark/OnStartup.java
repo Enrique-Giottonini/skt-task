@@ -1,7 +1,7 @@
-package com.spark.services;
+package com.spark;
 
 import com.spark.entities.domain.Product;
-import com.spark.entities.dto.ProductListMessage;
+import com.spark.entities.domain.ProductListMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -12,13 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Service
-public class StartupService implements ApplicationListener<ContextRefreshedEvent> {
+@Component
+public class OnStartup implements ApplicationListener<ContextRefreshedEvent> {
 
     private final List<Product> productList;
     private final KafkaTemplate<String, ProductListMessage> productListMessageKafkaTemplate;

@@ -1,7 +1,7 @@
 package com.spark.config;
 
-import com.spark.entities.dto.ProductListMessage;
-import com.spark.entities.dto.ProductMessage;
+import com.spark.entities.domain.ProductListMessage;
+import com.spark.entities.domain.ProductMessage;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
@@ -23,7 +23,6 @@ public class KafkaProducerConfig {
     @Value(value = "${kafka.bootstrapAddress}")
     private String bootstrapAddress;
 
-    // Common producer configurations
     private Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
@@ -36,25 +35,22 @@ public class KafkaProducerConfig {
         return props;
     }
 
-    // Producer factory for ProductMessage
     @Bean
     public ProducerFactory<String, ProductMessage> productMessageProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs(), new StringSerializer(), new JsonSerializer<>());
     }
 
-    // Kafka template for ProductMessage
-    @Bean
-    public KafkaTemplate<String, ProductMessage> productMessageKafkaTemplate() {
-        return new KafkaTemplate<>(productMessageProducerFactory());
-    }
-
-    // Producer factory for SimpleEvent which is a String
     @Bean
     public ProducerFactory<String, ProductListMessage> productMessageListProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs(), new StringSerializer(), new JsonSerializer<>());
     }
 
-    // Kafka template for ProductListMessage
+    @Bean
+    public KafkaTemplate<String, ProductMessage> productMessageKafkaTemplate() {
+        return new KafkaTemplate<>(productMessageProducerFactory());
+    }
+
+
     @Bean
     public KafkaTemplate<String, ProductListMessage> productMessageListKafkaTemplate() {
         return new KafkaTemplate<>(productMessageListProducerFactory());

@@ -1,7 +1,7 @@
-package com.spark.listener;
+package com.spark.events;
 
-import com.spark.entities.dto.ProductListMessage;
-import com.spark.services.ProductService;
+import com.spark.ProductService;
+import com.spark.entities.domain.ProductListMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class Listener {
+public class ProductListConsumer {
 
     private final ProductService productService;
 
-    @KafkaListener(id = "productsManagement", topics = "listOfProducts", containerFactory = "kafkaListenerContainerFactory")
-    public void listenProductListEvents(@Payload ProductListMessage payload) {
+    @KafkaListener(id = "productsManagement", topics = "listOfProducts", containerFactory = "productListKafkaListenerContainerFactory")
+    public void consume(@Payload ProductListMessage payload) {
         switch (payload.getAction()) {
             case "list.subscribe":
                 break;
