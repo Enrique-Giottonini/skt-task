@@ -1,5 +1,6 @@
 package com.spark.impl;
 
+import com.spark.ProductRepository;
 import com.spark.ProductService;
 import com.spark.entities.domain.Product;
 import com.spark.entities.domain.ProductMessage;
@@ -16,11 +17,11 @@ import java.util.List;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private final List<Product> productList;
+    private final ProductRepository productRepository;
     private final KafkaTemplate<String, ProductMessage> productMessageKafkaTemplate;
 
     public List<Product> findAll() {
-        return productList;
+        return productRepository.findAll();
     }
 
     public Product save(Product product) {
@@ -42,9 +43,8 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-    public void updateList(List<Product> deserialize) {
-        productList.clear();
-        productList.addAll(deserialize);
+    public void updateList(List<Product> updatedList) {
+        productRepository.replaceAll(updatedList);
     }
 
 }
