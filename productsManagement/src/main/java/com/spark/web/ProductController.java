@@ -1,6 +1,6 @@
 package com.spark.web;
 
-import com.spark.entities.domain.Product;
+import com.spark.entities.domain.ProductDTO;
 import com.spark.impl.ProductServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -23,21 +23,21 @@ public class ProductController {
 
     @GetMapping
     public String list(Model model) {
-        List<Product> listProduct = productService.findAll();
+        List<ProductDTO> listProduct = productService.findAll();
         model.addAttribute("listOfProduct", listProduct);
         return "product-list";
     }
 
     @GetMapping("/new")
     public String newProduct(Model model) {
-        model.addAttribute("product", new Product());
+        model.addAttribute("product", new ProductDTO());
         return "product-add";
     }
 
     @PostMapping("/new")
-    public RedirectView addProduct(@ModelAttribute("product") Product product, RedirectAttributes redirectAttributes) {
+    public RedirectView addProduct(@ModelAttribute("product") ProductDTO product, RedirectAttributes redirectAttributes) {
         final RedirectView redirectView = new RedirectView("/product/new", true);
-        Product savedProduct = productService.save(product);
+        ProductDTO savedProduct = productService.save(product);
         redirectAttributes.addFlashAttribute("savedProduct", savedProduct);
         redirectAttributes.addFlashAttribute("addProductSuccess", true);
         return redirectView;

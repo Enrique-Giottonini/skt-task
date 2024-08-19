@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductListMessage {
     private String action;
-    private List<Product> listOfProducts;
+    private List<ProductDTO> listOfProducts;
 }

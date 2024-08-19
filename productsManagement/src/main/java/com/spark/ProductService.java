@@ -1,11 +1,11 @@
 package com.spark;
 
-import com.spark.entities.domain.Product;
+import com.spark.entities.domain.ProductDTO;
 
 import java.util.List;
 
 public interface ProductService {
-    List<Product> findAll();
-    Product save(Product product);
-    void updateList(List<Product> productList);
+    List<ProductDTO> findAll();
+    ProductDTO save(ProductDTO product);
+    void updateList(List<ProductDTO> productList);
 }

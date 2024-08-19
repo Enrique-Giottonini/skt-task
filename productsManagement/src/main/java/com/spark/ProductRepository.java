@@ -1,6 +1,6 @@
 package com.spark;
 
-import com.spark.entities.domain.Product;
+import com.spark.entities.domain.ProductDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public class ProductRepository {
 
-    private final List<Product> productList = Collections.synchronizedList(new ArrayList<>());
+    private final List<ProductDTO> productList = Collections.synchronizedList(new ArrayList<>());
 
-    public List<Product> findAll() {
+    public List<ProductDTO> findAll() {
         return productList;
     }
 
@@ -20,7 +20,7 @@ public class ProductRepository {
         return productList.size();
     }
 
-    public void replaceAll(List<Product> newList) {
+    public void replaceAll(List<ProductDTO> newList) {
         productList.clear();
         productList.addAll(newList);
     }

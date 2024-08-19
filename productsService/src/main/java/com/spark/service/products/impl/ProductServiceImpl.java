@@ -1,8 +1,11 @@
 package com.spark.service.products.impl;
 
-import com.spark.entities.domain.Product;
+import com.spark.entities.domain.ProductDTO;
 import com.spark.entities.domain.ProductListMessage;
+import com.spark.service.products.ProductRepository;
 import com.spark.service.products.ProductService;
+import com.spark.service.products.entities.Product;
+import com.spark.service.products.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -16,18 +19,21 @@ import java.util.List;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private final List<Product> productList;
+    private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
     private final KafkaTemplate<String, ProductListMessage> kafkaTemplate;
 
 
-    public void addProduct(Product product) {
-        productList.add(product);
+    public void addProduct(ProductDTO dto) {
+        productRepository.save(productMapper.toProduct(dto));
         notifyUpdatedList();
     }
 
     public void notifyUpdatedList() {
         // TODO: Check this async(?) flow
-        ProductListMessage message = new ProductListMessage("list.update", productList);
+        List<Product> products = productRepository.findAll();
+        List<ProductDTO> productDTOs = productMapper.toProductDtoList(products);
+        ProductListMessage message = new ProductListMessage("list.update", productDTOs);
         ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
         future.addCallback(new ListenableFutureCallback<SendResult<String, ProductListMessage>>() {
             @Override
@@ -45,7 +51,9 @@ public class ProductServiceImpl implements ProductService {
 
     public void resendList() {
         // TODO: Check this async(?) flow
-        ProductListMessage message = new ProductListMessage("list.resend", productList);
+        List<Product> products = productRepository.findAll();
+        List<ProductDTO> productDTOs = productMapper.toProductDtoList(products);
+        ProductListMessage message = new ProductListMessage("list.resend", productDTOs);
         ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
         future.addCallback(new ListenableFutureCallback<SendResult<String, ProductListMessage>>() {
             @Override

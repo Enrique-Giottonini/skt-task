@@ -1,9 +1,9 @@
 package com.spark.service.products;
 
-import com.spark.entities.domain.Product;
+import com.spark.entities.domain.ProductDTO;
 
 public interface ProductService {
-    void addProduct(Product product);
+    void addProduct(ProductDTO product);
     void notifyUpdatedList(); // TODO: Documentation?
     void resendList();
 }

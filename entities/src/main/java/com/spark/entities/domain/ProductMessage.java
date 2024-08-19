@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductMessage {
     private String action;
-    private Product product;
+    private ProductDTO product;
 }
