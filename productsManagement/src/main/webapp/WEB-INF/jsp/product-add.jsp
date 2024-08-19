@@ -22,10 +22,6 @@
 
         <c:url var="add_product_url" value="/product/new"/>
         <form:form action="${add_product_url}" method="post" modelAttribute="product">
-            <div class="form-group">
-                <form:label path="id">ID: </form:label>
-                <form:input type="text" path="id" required="true"/>
-            </div>
 
             <div class="form-group">
                 <form:label path="name">Product Name: </form:label>
