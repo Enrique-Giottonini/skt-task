@@ -5,10 +5,26 @@
 - SpringBoot 1.5.7-RELEASE
 - JDK 1.8
 - Maven 3
-- Kafka
+- Apache Kafka
+- MS SQL Server
+- Docker version 26.0.0
 
 ## How to run
+
+You will need a configuration file for your DB
+```env
+/sqlserver.env
+
+ACCEPT_EULA=Y
+MSSQL_PID=Developer
+MSSQL_SA_PASSWORD=Sg.0s5+39?D)
+MSSQL_TCP_PORT=1433
+```
+
 ```bash
+# Start the MS SQL Server Database
+docker compose up -d
+
 # From the kafka source code
 # Start the ZooKeeper service
 bin/zookeeper-server-start.sh config/zookeeper.properties

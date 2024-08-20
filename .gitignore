@@ -3,3 +3,6 @@ target/
 # IntelliJ
 *.iml
 .idea
+*.env
+
+productsService/data/

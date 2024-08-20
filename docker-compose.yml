@@ -1,0 +1,13 @@
+services:
+  mssql:
+    build: ./productsService
+    platform: linux
+    ports:
+      - '3333:1433'
+    container_name: db-product-service-mssql
+    restart: always
+    env_file:
+      - sqlserver.env
+    volumes:
+      - ./productsService/data/mssql/data:/var/opt/mssql/data
+      - ./productsService/data/mssql/log:/var/opt/mssql/log
