@@ -25,13 +25,14 @@ public class ProductServiceImpl implements ProductService {
 
 
     public void addProduct(ProductDTO dto) {
-        productRepository.save(productMapper.toProduct(dto));
+        Product product = productMapper.toProduct(dto);
+        productRepository.insertProduct(product.getName(), product.getDescription(), product.getPrice());
         notifyUpdatedList();
     }
 
     public void notifyUpdatedList() {
         // TODO: Check this async(?) flow
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.getAllProducts();
         List<ProductDTO> productDTOs = productMapper.toProductDtoList(products);
         ProductListMessage message = new ProductListMessage("list.update", productDTOs);
         ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
@@ -51,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
 
     public void resendList() {
         // TODO: Check this async(?) flow
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.getAllProducts();
         List<ProductDTO> productDTOs = productMapper.toProductDtoList(products);
         ProductListMessage message = new ProductListMessage("list.resend", productDTOs);
         ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
