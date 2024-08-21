@@ -18,7 +18,6 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <spring-boot.version>1.5.7.RELEASE</spring-boot.version>
         <src.dir>src/main/java</src.dir>
     </properties>
 
@@ -27,11 +26,6 @@
         <module>productsManagement</module>
         <module>productsService</module>
     </modules>
-
-    <dependencyManagement>
-        <dependencies>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
 
