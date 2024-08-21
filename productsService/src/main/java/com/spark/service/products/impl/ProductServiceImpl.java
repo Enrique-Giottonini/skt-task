@@ -7,6 +7,7 @@ import com.spark.service.products.ProductService;
 import com.spark.service.products.entities.Product;
 import com.spark.service.products.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,9 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -39,13 +41,11 @@ public class ProductServiceImpl implements ProductService {
         future.addCallback(new ListenableFutureCallback<SendResult<String, ProductListMessage>>() {
             @Override
             public void onSuccess(SendResult<String, ProductListMessage> result) {
-                System.out.println("Sent message=[" + message +
-                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
+                log.info("Sent message=[{}] with offset=[{}]", message, result.getRecordMetadata().offset());
             }
             @Override
             public void onFailure(Throwable ex) {
-                System.out.println("Unable to send message=[" + message +
-                        "] due to : " + ex.getMessage());
+                log.error("Unable to send message=[{}] due to : {}", message, ex.getMessage());
             }
         });
     }
@@ -59,13 +59,11 @@ public class ProductServiceImpl implements ProductService {
         future.addCallback(new ListenableFutureCallback<SendResult<String, ProductListMessage>>() {
             @Override
             public void onSuccess(SendResult<String, ProductListMessage> result) {
-                System.out.println("Sent message=[" + message +
-                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
+                log.info("Sent message=[{}] with offset=[{}]", message, result.getRecordMetadata().offset());
             }
             @Override
             public void onFailure(Throwable ex) {
-                System.out.println("Unable to send message=[" + message +
-                        "] due to : " + ex.getMessage());
+                log.error("Unable to send message=[{}] due to : {}", message, ex.getMessage());
             }
         });
     }

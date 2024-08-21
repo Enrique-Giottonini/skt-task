@@ -1,8 +1,8 @@
 package com.spark;
 
-import com.spark.entities.domain.ProductDTO;
 import com.spark.entities.domain.ProductListMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -12,10 +12,10 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.ArrayList;
-import java.util.List;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class OnStartup implements ApplicationListener<ContextRefreshedEvent> {
 
     private final ProductRepository productRepository;
@@ -34,13 +34,11 @@ public class OnStartup implements ApplicationListener<ContextRefreshedEvent> {
         future.addCallback(new ListenableFutureCallback<SendResult<String, ProductListMessage>>() {
             @Override
             public void onSuccess(SendResult<String, ProductListMessage> result) {
-                System.out.println("Sent message=[" + payload +
-                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
+                log.info("Sent message=[{}] with offset=[{}]", payload, result.getRecordMetadata().offset());
             }
             @Override
             public void onFailure(Throwable ex) {
-                System.out.println("Unable to send message=[" + payload +
-                        "] due to : " + ex.getMessage());
+                log.info("Unable to send message=[{}] due to : {}", payload, ex.getMessage());
             }
         });
     }
