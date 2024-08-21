@@ -13,6 +13,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.7.RELEASE</version>
+        <relativePath/>
     </parent>
 
     <properties>
@@ -29,8 +30,15 @@
 
     <dependencyManagement>
         <dependencies>
-
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.spark</groupId>
+            <artifactId>common-entities</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
