@@ -20,6 +20,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>com.spark</groupId>
+            <artifactId>common-entities</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -27,12 +33,6 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.spark</groupId>
-            <artifactId>common-entities</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
