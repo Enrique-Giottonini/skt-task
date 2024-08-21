@@ -27,8 +27,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     public void addProduct(ProductDTO dto) {
-        Product product = productMapper.toProduct(dto);
-        productRepository.insertProduct(product.getName(), product.getDescription(), product.getPrice());
+        productRepository.insertProduct(productMapper.toProduct(dto));
         notifyUpdatedList();
     }
 

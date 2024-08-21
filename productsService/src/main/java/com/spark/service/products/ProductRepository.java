@@ -13,8 +13,6 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
     @Query(value = "EXEC dbo.getAllProducts", nativeQuery = true)
     List<Product> getAllProducts();
 
-    @Query(value = "EXEC dbo.insertProduct :Name, :Description, :Price", nativeQuery = true)
-    Product insertProduct(@Param("Name") String name,
-                          @Param("Description") String description,
-                          @Param("Price") Double price);
+    @Query(value = "EXEC dbo.insertProduct :#{#product.name}, :#{#product.description}, :#{#product.price}", nativeQuery = true)
+    Product insertProduct(@Param("product") Product product);
 }
