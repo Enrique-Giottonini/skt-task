@@ -2,8 +2,12 @@ package com.spark.service.products.events;
 
 import com.spark.entities.domain.ProductMessage;
 import com.spark.service.products.ProductService;
+import com.spark.service.products.exceptions.ProductValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.DataException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +20,18 @@ public class ProductConsumer {
 
     @KafkaListener(id = "productsService", topics = "product", containerFactory = "productKafkaListenerContainerFactory")
     public void consume(ProductMessage payload) {
-        log.info("Received new message");
-        if (payload != null && "product.creation".equals(payload.getAction())) {
-            productService.addProduct(payload.getProduct());
-            productService.notifyUpdatedList();
+        log.info("Received a new message");
+        if (payload != null && "product.creation".equals(payload.getAction()) && payload.getProduct() != null) {
+            try {
+                productService.addProduct(payload.getProduct());
+                productService.notifyUpdatedList();
+            } catch (ProductValidationException e) {
+                log.error("Payload received and invalid ProductDTO: {}", e.getMessage());
+            } catch (DataAccessException | DataException e) {
+                log.error("Payload processing failed to be saved: {}", e.getMessage());
+            } catch (KafkaException e) {
+                log.error("Payload processing failed to communicate to subscribers: {}", e.getMessage());
+            }
         }
     }
 }
