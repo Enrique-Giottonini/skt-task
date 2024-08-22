@@ -7,6 +7,7 @@ import com.spark.service.products.entities.Product;
 import com.spark.service.products.exceptions.ProductValidationException;
 import com.spark.service.products.impl.ProductServiceImpl;
 import com.spark.service.products.mapper.ProductMapper;
+import org.hibernate.exception.DataException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -66,6 +67,30 @@ public class ProductServiceImplTest {
         dto.setPrice(new BigDecimal(-1)); // Invalid price (negative, violates @Min)
 
         Mockito.when(productMapper.toProduct(dto)).thenThrow(new ConstraintViolationException(Collections.emptySet()));
+
+        // Act
+        productService.addProduct(dto);
+    }
+
+    @Test(expected = DataException.class)
+    public void testAddProduct_ThrowsDataException() {
+        // Arrange
+        ProductDTO dto = new ProductDTO();
+        dto.setId(1);
+        dto.setName("Test Product");
+        dto.setDescription("Test Description");
+        dto.setPrice(new BigDecimal(99.99));
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("Test Product");
+        product.setDescription("Test Description");
+        product.setPrice(new BigDecimal(99.99));
+
+        Mockito.when(productMapper.toProduct(dto)).thenReturn(product);
+
+        // Simulate DataException being thrown when inserting the product
+        Mockito.doThrow(new DataException("Database error", null)).when(productRepository).insertProduct(product);
 
         // Act
         productService.addProduct(dto);
