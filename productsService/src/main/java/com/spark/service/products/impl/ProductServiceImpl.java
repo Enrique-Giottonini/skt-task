@@ -58,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
             List<ProductDTO> productDTOs = productMapper.toProductDtoList(products);
             ProductListMessage message = new ProductListMessage(messageType, productDTOs);
             ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
-            future.addCallback(new KafkaCallback<>(message));
+            future.addCallback(new KafkaCallback<>(message)); // For logging
         } catch (DataAccessException e) {
             log.error("Error accessing data from the repository: {}", e.getMessage());
             throw e;
