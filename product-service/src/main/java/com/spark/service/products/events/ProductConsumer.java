@@ -28,9 +28,9 @@ public class ProductConsumer {
             } catch (ProductValidationException e) {
                 log.error("Payload received and invalid ProductDTO: {}", e.getMessage());
             } catch (DataAccessException | DataException e) {
-                log.error("Payload processing failed to be saved: {}", e.getMessage());
+                log.error("Database error occurred while processing message with action {}: {}", payload.getAction(), e.getMessage(), e);
             } catch (KafkaException e) {
-                log.error("Payload processing failed to communicate to subscribers: {}", e.getMessage());
+                log.error("Kafka error occurred while processing message with action {}: {}", payload.getAction(), e.getMessage(), e);
             }
         }
     }
