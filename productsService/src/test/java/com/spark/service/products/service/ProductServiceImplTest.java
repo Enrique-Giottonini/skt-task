@@ -147,4 +147,49 @@ public class ProductServiceImplTest {
         // Act
         productService.notifyUpdatedList();
     }
+
+    @Test
+    public void testResendList_Success() {
+        // Arrange
+        List<Product> products = Collections.singletonList(new Product());
+        List<ProductDTO> productDTOs = Collections.singletonList(new ProductDTO());
+        ProductListMessage message = new ProductListMessage("list.resend", productDTOs);
+
+        when(productRepository.getAllProducts()).thenReturn(products);
+        when(productMapper.toProductDtoList(products)).thenReturn(productDTOs);
+        when(kafkaTemplate.send("listOfProducts", message)).thenReturn(future);
+
+        // Act
+        productService.resendList();
+
+        // Assert
+        verify(productRepository, times(1)).getAllProducts();
+        verify(productMapper, times(1)).toProductDtoList(products);
+        verify(kafkaTemplate, times(1)).send("listOfProducts", message);
+        verify(future, times(1)).addCallback(any(KafkaCallback.class));
+    }
+
+    @Test(expected = DataAccessException.class)
+    public void testResendList_DataAccessException() {
+        // Arrange
+        doThrow(mock(DataAccessException.class)).when(productRepository).getAllProducts();
+
+        // Act
+        productService.resendList();
+    }
+
+    @Test(expected = KafkaException.class)
+    public void testResendList_KafkaException() {
+        // Arrange
+        List<Product> products = Collections.singletonList(new Product());
+        List<ProductDTO> productDTOs = Collections.singletonList(new ProductDTO());
+        ProductListMessage message = new ProductListMessage("list.resend", productDTOs);
+
+        when(productRepository.getAllProducts()).thenReturn(products);
+        when(productMapper.toProductDtoList(products)).thenReturn(productDTOs);
+        doThrow(new KafkaException("Kafka error")).when(kafkaTemplate).send("listOfProducts", message);
+
+        // Act
+        productService.resendList();
+    }
 }
