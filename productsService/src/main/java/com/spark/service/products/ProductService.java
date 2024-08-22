@@ -6,7 +6,7 @@ import org.hibernate.exception.DataException;
 
 public interface ProductService {
     /**
-     * Adds a new product to the repository.
+     * Adds a new product to the database.
      *
      *
      * @param product the product dto containing the information of the product to add
