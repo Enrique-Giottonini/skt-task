@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.DataException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -44,11 +45,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public void notifyUpdatedList() {
-        List<Product> products = productRepository.getAllProducts();
-        List<ProductDTO> productDTOs = productMapper.toProductDtoList(products);
-        ProductListMessage message = new ProductListMessage("list.update", productDTOs);
-        ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
-        future.addCallback(new KafkaCallback<>(message));
+        try {
+            List<Product> products = productRepository.getAllProducts();
+            List<ProductDTO> productDTOs = productMapper.toProductDtoList(products);
+            ProductListMessage message = new ProductListMessage("list.update", productDTOs);
+            ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
+            future.addCallback(new KafkaCallback<>(message));
+        } catch (DataAccessException e) {
+                log.error("Error accessing data from the repository: {}", e.getMessage());
+                // Handle the database access exception, possibly retry? Todo
+                throw e;
+        } catch (KafkaException e) {
+            log.error("Error sending message to Kafka: {}", e.getMessage());
+            // Handle the Kafka exception, possibly retry from here? Todo
+            throw e;
+        }
     }
 
     public void resendList() {

@@ -4,6 +4,7 @@ import com.spark.entities.domain.ProductDTO;
 import com.spark.entities.domain.ProductListMessage;
 import com.spark.service.products.ProductRepository;
 import com.spark.service.products.entities.Product;
+import com.spark.service.products.events.KafkaCallback;
 import com.spark.service.products.exceptions.ProductValidationException;
 import com.spark.service.products.impl.ProductServiceImpl;
 import com.spark.service.products.mapper.ProductMapper;
@@ -14,11 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.dao.DataAccessException;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -28,12 +34,13 @@ public class ProductServiceImplTest {
     @Mock private ProductRepository productRepository;
     @Mock private KafkaTemplate<String, ProductListMessage> kafkaTemplate;
     @Mock private ProductMapper productMapper;
+    @Mock private ListenableFuture<SendResult<String, ProductListMessage>> future;
 
     @InjectMocks
     private ProductServiceImpl productService;
 
     @Test
-    public void testAddValidProduct() {
+    public void testAddProduct_Success() {
         // Arrange
         ProductDTO dto = new ProductDTO();
         dto.setId(0);
@@ -58,7 +65,7 @@ public class ProductServiceImplTest {
     }
 
     @Test(expected = ProductValidationException.class)
-    public void testAddInvalidProductFromDto() {
+    public void testAddProduct_ThrowsProductValidationException() {
         // Arrange
         ProductDTO dto = new ProductDTO();
         dto.setId(0);
@@ -95,4 +102,49 @@ public class ProductServiceImplTest {
         // Act
         productService.addProduct(dto);
         }
+
+    @Test
+    public void testNotifyUpdatedList_Success() {
+        // Arrange
+        List<Product> products = Collections.singletonList(new Product());
+        List<ProductDTO> productDTOs = Collections.singletonList(new ProductDTO());
+        ProductListMessage message = new ProductListMessage("list.update", productDTOs);
+
+        when(productRepository.getAllProducts()).thenReturn(products);
+        when(productMapper.toProductDtoList(products)).thenReturn(productDTOs);
+        when(kafkaTemplate.send("listOfProducts", message)).thenReturn(future);
+
+        // Act
+        productService.notifyUpdatedList();
+
+        // Assert
+        verify(productRepository, times(1)).getAllProducts();
+        verify(productMapper, times(1)).toProductDtoList(products);
+        verify(kafkaTemplate, times(1)).send("listOfProducts", message);
+        verify(future, times(1)).addCallback(any(KafkaCallback.class));
+    }
+
+    @Test(expected = DataAccessException.class)
+    public void testNotifyUpdatedList_DataAccessException() {
+        // Arrange
+        doThrow(mock(DataAccessException.class)).when(productRepository).getAllProducts();
+
+        // Act
+        productService.notifyUpdatedList();
+    }
+
+    @Test(expected = KafkaException.class)
+    public void testNotifyUpdatedList_KafkaException() {
+        // Arrange
+        List<Product> products = Collections.singletonList(new Product());
+        List<ProductDTO> productDTOs = Collections.singletonList(new ProductDTO());
+        ProductListMessage message = new ProductListMessage("list.update", productDTOs);
+
+        when(productRepository.getAllProducts()).thenReturn(products);
+        when(productMapper.toProductDtoList(products)).thenReturn(productDTOs);
+        doThrow(new KafkaException("Kafka error")).when(kafkaTemplate).send("listOfProducts", message);
+
+        // Act
+        productService.notifyUpdatedList();
+    }
 }
