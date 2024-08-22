@@ -44,7 +44,7 @@ services:
     container_name: db-product-service-mssql
     restart: always
     env_file:
-      - sqlserver.env
+      - product-service/sqlserver.env
     volumes:
       - ./product-service/data/mssql/data:/var/opt/mssql/data
       - ./product-service/data/mssql/log:/var/opt/mssql/log
