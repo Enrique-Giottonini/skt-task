@@ -10,6 +10,7 @@ import com.spark.service.products.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.DataException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
         } catch (ConstraintViolationException e) {
             log.error("Invalid ProductDTO: {}", e.getMessage());
             throw new ProductValidationException("Invalid product data provided", e);
-        } catch (DataException e) {
+        } catch (DataAccessException | DataException e) {
             log.error("Product could not be saved in database: {}", e.getMessage());
             throw e;
         }
