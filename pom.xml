@@ -21,9 +21,9 @@
     </properties>
 
     <modules>
-        <module>entities</module>
-        <module>productsManagement</module>
-        <module>productsService</module>
+        <module>common</module>
+        <module>product-management-webapp</module>
+        <module>product-service</module>
         <module>jacoco-report-aggregate</module>
     </modules>
 

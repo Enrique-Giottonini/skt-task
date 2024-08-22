@@ -18,12 +18,12 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>productsManagement</artifactId>
+            <artifactId>product-management-webapp</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>productsService</artifactId>
+            <artifactId>product-service</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
