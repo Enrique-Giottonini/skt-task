@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>jacoco-report-aggregate</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -20,6 +21,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>product-management-webapp</artifactId>
             <version>${project.version}</version>
+            <type>war</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
