@@ -4,6 +4,7 @@ import com.spark.entities.domain.ProductDTO;
 import com.spark.entities.domain.ProductListMessage;
 import com.spark.service.products.ProductRepository;
 import com.spark.service.products.entities.Product;
+import com.spark.service.products.exceptions.ProductValidationException;
 import com.spark.service.products.impl.ProductServiceImpl;
 import com.spark.service.products.mapper.ProductMapper;
 import org.junit.Test;
@@ -14,7 +15,9 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import javax.validation.ConstraintViolationException;
 import java.math.BigDecimal;
+import java.util.Collections;
 
 import static org.mockito.Mockito.*;
 
@@ -51,5 +54,20 @@ public class ProductServiceImplTest {
 
         // Assert
         verify(productRepository, times(1)).insertProduct(product); // Interaction with DB
+    }
+
+    @Test(expected = ProductValidationException.class)
+    public void testAddInvalidProductFromDto() {
+        // Arrange
+        ProductDTO dto = new ProductDTO();
+        dto.setId(0);
+        dto.setName("InvalidPrice");
+        dto.setDescription("TestDescription");
+        dto.setPrice(new BigDecimal(-1)); // Invalid price (negative, violates @Min)
+
+        Mockito.when(productMapper.toProduct(dto)).thenThrow(new ConstraintViolationException(Collections.emptySet()));
+
+        // Act
+        productService.addProduct(dto);
     }
 }

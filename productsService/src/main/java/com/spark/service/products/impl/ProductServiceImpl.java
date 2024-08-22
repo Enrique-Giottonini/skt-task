@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             productRepository.insertProduct(productMapper.toProduct(dto));
         } catch (ConstraintViolationException e) {
-            log.error("Invalid product from {}", dto);
+            log.error("Invalid product from dto: {}", dto);
             throw new ProductValidationException(e.getMessage(), e);
         }
     }
