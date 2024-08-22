@@ -5,4 +5,5 @@ target/
 .idea
 *.env
 
-product-service/data/*
+product-service/data/
+
