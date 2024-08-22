@@ -13,7 +13,7 @@
 
 You will need a configuration file for your DB
 ```env
-/sqlserver.env
+/product-service/sqlserver.env
 
 ACCEPT_EULA=Y
 MSSQL_PID=Developer
@@ -23,6 +23,8 @@ MSSQL_TCP_PORT=1433
 
 And for Kafka
 ```env
+/kafka.env
+
 KAFKA_BROKER_ID: 1
 KAFKA_ZOOKEEPER_CONNECT: stk-task-zookeeper:2181
 KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://stk-task-kafka:9092,PLAINTEXT_HOST://localhost:1113
@@ -36,8 +38,8 @@ KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 docker compose up -d
 
 mvn clean package
-java -jar productsManagement/target/productsManagement-1.0-SNAPSHOT.war
-java -jar productsService/target/productsService-1.0-SNAPSHOT.jar 
+java -jar product-management-webapp/target/product-management-webapp-1.0-SNAPSHOT.war          
+java -jar product-service/target/product-service-1.0-SNAPSHOT.jar   
 
 # For stopping the containers
 docker compose down
