@@ -6,7 +6,6 @@ import com.spark.service.products.ProductRepository;
 import com.spark.service.products.entities.Product;
 import com.spark.service.products.impl.ProductServiceImpl;
 import com.spark.service.products.mapper.ProductMapper;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

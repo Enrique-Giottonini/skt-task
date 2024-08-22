@@ -3,13 +3,16 @@ package com.spark.service.products.mapper;
 import com.spark.entities.domain.ProductDTO;
 import com.spark.service.products.entities.Product;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Validated
 @Component
 public class ProductMapper {
-    public Product toProduct(ProductDTO dto) {
+    public Product toProduct(@Valid ProductDTO dto) {
         Product product = new Product();
         product.setId(dto.getId());
         product.setName(dto.getName());

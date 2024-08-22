@@ -5,6 +5,7 @@ import com.spark.entities.domain.ProductListMessage;
 import com.spark.service.products.ProductRepository;
 import com.spark.service.products.ProductService;
 import com.spark.service.products.entities.Product;
+import com.spark.service.products.exceptions.ProductValidationException;
 import com.spark.service.products.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +14,14 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 
@@ -26,7 +30,12 @@ public class ProductServiceImpl implements ProductService {
     private final KafkaTemplate<String, ProductListMessage> kafkaTemplate;
 
     public void addProduct(ProductDTO dto) {
-        productRepository.insertProduct(productMapper.toProduct(dto));
+        try {
+            productRepository.insertProduct(productMapper.toProduct(dto));
+        } catch (ConstraintViolationException e) {
+            log.error("Invalid product from {}", dto);
+            throw new ProductValidationException(e.getMessage(), e);
+        }
     }
 
     public void notifyUpdatedList() {
