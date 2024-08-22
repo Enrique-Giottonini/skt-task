@@ -4,6 +4,6 @@ import com.spark.entities.domain.ProductDTO;
 
 public interface ProductService {
     void addProduct(ProductDTO product);
-    void notifyUpdatedList(); // TODO: Documentation?
+    void notifyUpdatedList(); // TODO: documentation?
     void resendList();
 }

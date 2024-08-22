@@ -19,6 +19,7 @@ public class ProductConsumer {
         log.info("Received new message");
         if (payload != null && "product.creation".equals(payload.getAction())) {
             productService.addProduct(payload.getProduct());
+            productService.notifyUpdatedList();
         }
     }
 }

@@ -25,10 +25,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final KafkaTemplate<String, ProductListMessage> kafkaTemplate;
 
-
     public void addProduct(ProductDTO dto) {
         productRepository.insertProduct(productMapper.toProduct(dto));
-        notifyUpdatedList();
     }
 
     public void notifyUpdatedList() {
