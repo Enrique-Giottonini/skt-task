@@ -37,7 +37,7 @@ services:
       "
 
   mssql:
-    build: ./productsService
+    build: ./product-service
     platform: linux
     ports:
       - '3333:1433'
@@ -46,5 +46,5 @@ services:
     env_file:
       - sqlserver.env
     volumes:
-      - ./productsService/data/mssql/data:/var/opt/mssql/data
-      - ./productsService/data/mssql/log:/var/opt/mssql/log
+      - ./product-service/data/mssql/data:/var/opt/mssql/data
+      - ./product-service/data/mssql/log:/var/opt/mssql/log
