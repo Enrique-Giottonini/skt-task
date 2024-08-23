@@ -67,6 +67,12 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/config/*</exclude>
+                        <exclude>com/spark/service/products/entities/*</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
