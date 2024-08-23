@@ -2,7 +2,7 @@ package com.spark.service.products;
 
 import com.spark.entities.domain.ProductDTO;
 import com.spark.service.products.entities.Product;
-import com.spark.service.products.exceptions.ProductValidationException;
+import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import org.hibernate.exception.DataException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.kafka.KafkaException;
@@ -12,11 +12,11 @@ public interface ProductService {
      * Adds a new product to the database.
      *
      * This method validates the provided {@link ProductDTO} and converts it to a {@link Product} entity before saving it to the database.
-     * If the validation fails, a {@link ProductValidationException} is thrown. If there is a database-related error during the save operation,
+     * If the validation fails, a {@link ProductDtoValidationException} is thrown. If there is a database-related error during the save operation,
      * a {@link DataAccessException} or {@link DataException} is thrown.
      *
      * @param product the product dto containing the information of the product to add
-     * @throws ProductValidationException if the product data is invalid
+     * @throws ProductDtoValidationException if the product data is invalid
      * @throws DataAccessException if there is an issue accessing the database
      * @throws DataException if the product could not be saved to the database
      */

@@ -5,7 +5,7 @@ import com.spark.entities.domain.ProductListMessage;
 import com.spark.service.products.ProductRepository;
 import com.spark.service.products.entities.Product;
 import com.spark.service.products.events.KafkaCallback;
-import com.spark.service.products.exceptions.ProductValidationException;
+import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import com.spark.service.products.impl.ProductServiceImpl;
 import com.spark.service.products.mapper.ProductMapper;
 import org.hibernate.exception.DataException;
@@ -64,7 +64,7 @@ public class ProductServiceImplTest {
         verify(productRepository, times(1)).insertProduct(product); // Interaction with DB
     }
 
-    @Test(expected = ProductValidationException.class)
+    @Test(expected = ProductDtoValidationException.class)
     public void testAddProduct_ThrowsProductValidationException() {
         // Arrange
         ProductDTO dto = new ProductDTO();

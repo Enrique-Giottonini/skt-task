@@ -2,7 +2,7 @@ package com.spark.service.products.events;
 
 import com.spark.entities.domain.ProductMessage;
 import com.spark.service.products.ProductService;
-import com.spark.service.products.exceptions.ProductValidationException;
+import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.DataException;
@@ -25,7 +25,7 @@ public class ProductConsumer {
             try {
                 productService.addProduct(payload.getProduct());
                 productService.notifyUpdatedList();
-            } catch (ProductValidationException e) {
+            } catch (ProductDtoValidationException e) {
                 log.error("Payload received and invalid ProductDTO: {}", e.getMessage());
             } catch (DataAccessException | DataException e) {
                 log.error("Database error occurred while processing message with action {}: {}", payload.getAction(), e.getMessage(), e);

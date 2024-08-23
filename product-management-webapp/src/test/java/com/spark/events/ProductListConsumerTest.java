@@ -3,12 +3,15 @@ package com.spark.events;
 import com.spark.ProductService;
 import com.spark.entities.domain.ProductDTO;
 import com.spark.entities.domain.ProductListMessage;
+import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.List;
 
@@ -82,4 +85,29 @@ public class ProductListConsumerTest {
         verify(productService, never()).updateList(anyList());
     }
 
+    @Test
+    public void testConsume_NullListAsUpdate() {
+        // Arrange
+        ProductListMessage payload = new ProductListMessage("unknown.action", null);
+
+        // Act
+        productListConsumer.consume(payload);
+
+        // Assert
+        verify(productService, never()).updateList(anyList());
+    }
+
+    @Test(expected = ProductDtoValidationException.class)
+    public void testConsume_InvalidListAsUpdate() {
+        // Arrange
+        ProductListMessage payload = new ProductListMessage("list.update", Collections.singletonList(new ProductDTO()));
+
+        doThrow(mock(ConstraintViolationException.class)).when(productService).updateList(payload.getListOfProducts());
+
+        // Act
+        productListConsumer.consume(payload);
+
+        // Assert
+        verify(productService, never()).updateList(anyList());
+    }
 }

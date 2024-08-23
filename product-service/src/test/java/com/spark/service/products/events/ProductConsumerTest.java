@@ -3,7 +3,7 @@ package com.spark.service.products.events;
 import com.spark.entities.domain.ProductDTO;
 import com.spark.entities.domain.ProductMessage;
 import com.spark.service.products.ProductService;
-import com.spark.service.products.exceptions.ProductValidationException;
+import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import org.springframework.kafka.KafkaException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,7 +82,7 @@ public class ProductConsumerTest {
         embeddedProduct.setPrice(new BigDecimal(-1)); // Can't be negative
         ProductMessage payload = new ProductMessage("product.creation", embeddedProduct);
 
-        doThrow(new ProductValidationException("Invalid product data provided", null))
+        doThrow(new ProductDtoValidationException("Invalid product data provided", null))
                 .when(productService)
                 .addProduct(payload.getProduct());
 

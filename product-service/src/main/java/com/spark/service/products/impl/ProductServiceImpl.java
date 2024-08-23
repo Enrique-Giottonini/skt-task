@@ -6,7 +6,7 @@ import com.spark.service.products.ProductRepository;
 import com.spark.service.products.ProductService;
 import com.spark.service.products.entities.Product;
 import com.spark.service.products.events.KafkaCallback;
-import com.spark.service.products.exceptions.ProductValidationException;
+import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import com.spark.service.products.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
             productRepository.insertProduct(productMapper.toProduct(dto));
         } catch (ConstraintViolationException e) {
             log.error("Invalid ProductDTO: {}", e.getMessage());
-            throw new ProductValidationException("Invalid product data provided", e);
+            throw new ProductDtoValidationException("Invalid product data provided", e);
         } catch (DataAccessException | DataException e) {
             log.error("Product could not be saved in database: {}", e.getMessage());
             throw e;
