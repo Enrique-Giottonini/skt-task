@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ProductService {
     List<ProductDTO> findAll();
-    ProductDTO save(ProductDTO product);
+    void sendToProcess(ProductDTO product);
     void updateList(List<ProductDTO> productList);
 }

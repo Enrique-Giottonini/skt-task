@@ -50,8 +50,8 @@ public class ProductController {
             redirectAttributes.addFlashAttribute("error", "Verify your data");
             return new RedirectView("/product/new", true);
         }
-        ProductDTO savedProduct = productService.save(product);
-        redirectAttributes.addFlashAttribute("savedProduct", savedProduct);
+        productService.sendToProcess(product);
+        redirectAttributes.addFlashAttribute("savedProduct", product);
         redirectAttributes.addFlashAttribute("addProductSuccess", true);
         return new RedirectView("/product/new", true);
     }
