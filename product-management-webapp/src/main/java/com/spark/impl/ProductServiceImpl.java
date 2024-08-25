@@ -31,7 +31,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public ProductDTO save(ProductDTO product) {
-        // TODO: Check this async(?) flow
         ProductMessage message = new ProductMessage("product.creation", product);
         ListenableFuture<SendResult<String, ProductMessage>> future = productMessageKafkaTemplate.send("product", message);
         future.addCallback(new ListenableFutureCallback<SendResult<String, ProductMessage>>() {

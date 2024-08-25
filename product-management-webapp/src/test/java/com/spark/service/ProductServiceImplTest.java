@@ -12,6 +12,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,21 @@ public class ProductServiceImplTest {
 
     @InjectMocks
     private ProductServiceImpl productService;
+
+    @Test
+    public void testFindAll_Success() {
+        // Arrange
+        List<ProductDTO> productList = Collections.singletonList(new ProductDTO());
+
+        when(productRepository.findAll()).thenReturn(productList);
+
+        // Act
+        List<ProductDTO> products = productService.findAll();
+
+
+        // Assert
+        assertThat(products).isEqualTo(productList);
+    }
 
     @Test
     public void testUpdateList_Success() {
