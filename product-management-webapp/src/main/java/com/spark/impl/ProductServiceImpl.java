@@ -3,6 +3,7 @@ package com.spark.impl;
 import com.spark.ProductRepository;
 import com.spark.ProductService;
 import com.spark.entities.domain.ProductDTO;
+import com.spark.entities.domain.ProductListMessage;
 import com.spark.entities.domain.ProductMessage;
 import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import com.spark.events.KafkaCallback;
@@ -17,6 +18,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final KafkaTemplate<String, ProductMessage> productMessageKafkaTemplate;
+    private final KafkaTemplate<String, ProductListMessage> productListMessageKafkaTemplate;
 
     public List<ProductDTO> findAll() {
         return productRepository.findAll();
@@ -45,5 +48,11 @@ public class ProductServiceImpl implements ProductService {
 
     public void updateList(List<ProductDTO> updatedList) {
         productRepository.replaceAll(updatedList);
+    }
+
+    public void requestList() {
+        ProductListMessage payload = new ProductListMessage("list.subscribe", new ArrayList<>());
+        ListenableFuture<SendResult<String, ProductListMessage>> future = productListMessageKafkaTemplate.send("listOfProducts", payload);
+        future.addCallback(new KafkaCallback<>(payload));
     }
 }
