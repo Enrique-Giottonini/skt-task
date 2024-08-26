@@ -4,7 +4,7 @@ import com.spark.entities.domain.ProductDTO;
 import com.spark.entities.domain.ProductMessage;
 import com.spark.service.products.ProductService;
 import com.spark.entities.domain.exceptions.ProductDtoValidationException;
-import org.springframework.kafka.KafkaException;
+import org.apache.kafka.common.KafkaException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.apache.kafka.common.KafkaException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -55,11 +56,17 @@ public class ProductController {
 
             log.error("Product could not be saved because of error: {}", errorMessage);
             model.addAttribute("error", errorMessage);
-
             return "product-add";
         }
 
-        productService.sendToProcess(product);
+        try {
+            productService.sendToProcess(product);
+        } catch (KafkaException e) {
+            log.error("Error sending message to Kafka: {}", e.getMessage());
+            model.addAttribute("error", "Service is unavailable, please try again later.");
+            return "product-add";
+        }
+
         redirectAttributes.addFlashAttribute("savedProduct", product);
         redirectAttributes.addFlashAttribute("addProductSuccess", true);
         return "redirect:/product/new";

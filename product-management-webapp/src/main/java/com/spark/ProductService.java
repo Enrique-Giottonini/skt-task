@@ -1,7 +1,7 @@
 package com.spark;
 
 import com.spark.entities.domain.ProductDTO;
-import org.springframework.kafka.KafkaException;
+import org.apache.kafka.common.KafkaException;
 
 import java.util.List;
 

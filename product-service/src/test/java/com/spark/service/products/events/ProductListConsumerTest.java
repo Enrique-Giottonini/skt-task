@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataAccessException;
-import org.springframework.kafka.KafkaException;
+import org.apache.kafka.common.KafkaException;
 
 import static org.mockito.Mockito.*;
 

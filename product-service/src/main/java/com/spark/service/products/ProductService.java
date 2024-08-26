@@ -5,7 +5,7 @@ import com.spark.service.products.entities.Product;
 import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import org.hibernate.exception.DataException;
 import org.springframework.dao.DataAccessException;
-import org.springframework.kafka.KafkaException;
+import org.apache.kafka.common.KafkaException;
 
 public interface ProductService {
     /**

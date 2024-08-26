@@ -4,9 +4,11 @@ import com.spark.entities.domain.ProductDTO;
 import com.spark.impl.ProductServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.apache.kafka.common.KafkaException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -119,6 +121,19 @@ public class ProductControllerTest {
                         .param("name", "Valid Product Name")
                         .param("description", "Valid Description")
                         .param("price", "10.123")) // invalid price (too many fractional digits)
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"));
+    }
+
+    @Test
+    public void testAddProduct_KafkaUnavailable() throws Exception {
+        Mockito.doThrow(new KafkaException("Kafka is currently unavailable. Please try again later."))
+                .when(productService).sendToProcess(Mockito.any(ProductDTO.class));
+
+        mockMvc.perform(post("/product/new")
+                        .param("name", "Valid Product Name")
+                        .param("description", "Valid Description")
+                        .param("price", "10.0"))  // Valid price format
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("error"));
     }
