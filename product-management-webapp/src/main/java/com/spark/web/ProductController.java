@@ -26,12 +26,6 @@ public class ProductController {
 
     private final ProductServiceImpl productService;
 
-    // for custom error handling type mismatches from client
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
-    }
-
     @GetMapping
     public String list(Model model) {
         List<ProductDTO> listProduct = productService.findAll();
@@ -50,14 +44,17 @@ public class ProductController {
                                    BindingResult bindingResult,
                                    Model model,
                                    RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors() && bindingResult.getFieldError() != null) {
             FieldError error = bindingResult.getFieldError();
+            String fieldName = error.getField();
+            String errorMessage = error.getDefaultMessage();
 
-            if (error != null) {
-                String errorMessage = error.getDefaultMessage();
-                log.error("Product could not be saved because of error: {}", errorMessage);
-                model.addAttribute("error", errorMessage);
+            if ("price".equals(fieldName) && error.getCode().equals("typeMismatch")) {
+                errorMessage = "Invalid format for price. Please enter a numeric value.";
             }
+
+            log.error("Product could not be saved because of error: {}", errorMessage);
+            model.addAttribute("error", errorMessage);
 
             return "product-add";
         }
@@ -66,11 +63,5 @@ public class ProductController {
         redirectAttributes.addFlashAttribute("savedProduct", product);
         redirectAttributes.addFlashAttribute("addProductSuccess", true);
         return "redirect:/product/new";
-    }
-
-    @ExceptionHandler(TypeMismatchException.class)
-    public RedirectView handleTypeMismatchException(TypeMismatchException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("priceError", "Invalid format for price. Please enter a numeric value.");
-        return new RedirectView("/product/new", true);
     }
 }

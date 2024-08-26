@@ -9,7 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.Collections;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,7 +28,7 @@ public class ProductControllerTest {
 
     @Test
     public void testAddProduct_Success() throws Exception {
-        MvcResult result = mockMvc.perform(post("/product/new")
+        mockMvc.perform(post("/product/new")
                         .param("name", "Valid Product Name")
                         .param("price", "10.0"))
                 .andExpect(status().is3xxRedirection())
@@ -38,4 +39,88 @@ public class ProductControllerTest {
         // Verify that the productService method was called
         verify(productService).sendToProcess(any(ProductDTO.class));
     }
+
+    @Test
+    public void testAddProduct_NameTooLong() throws Exception {
+        int maxLength = 50;
+        String longName = String.join("", Collections.nCopies(maxLength + 1, "*"));
+        mockMvc.perform(post("/product/new")
+                        .param("name", longName)
+                        .param("description", "Valid Description")
+                        .param("price", "10"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"));
+    }
+
+    @Test
+    public void testAddProduct_NameIsBlank() throws Exception {
+        mockMvc.perform(post("/product/new")
+                        .param("name", "      ")
+                        .param("description", "Valid Description")
+                        .param("price", "10"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"));
+    }
+
+    @Test
+    public void testAddProduct_DescriptionTooLong() throws Exception {
+        int maxLength = 100;
+        String longDescription = String.join("", Collections.nCopies(maxLength + 1, "*"));
+        mockMvc.perform(post("/product/new")
+                        .param("name", "Valid Name")
+                        .param("description", longDescription)
+                        .param("price", "10"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"));
+    }
+
+    @Test
+    public void testAddProduct_PriceIsNull() throws Exception {
+        mockMvc.perform(post("/product/new")
+                        .param("name", "Valid Name")
+                        .param("description", "Valid Description"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"));
+    }
+
+    @Test
+    public void testAddProduct_PriceNegative() throws Exception {
+        mockMvc.perform(post("/product/new")
+                        .param("name", "Valid Name")
+                        .param("description", "Valid Description")
+                        .param("price", "-5.0"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"));
+    }
+
+    @Test
+    public void testAddProduct_NonNumericPrice() throws Exception {
+        mockMvc.perform(post("/product/new")
+                        .param("name", "Valid Product Name")
+                        .param("description", "Valid Description")
+                        .param("price", "abc")) // invalid price (non-numeric)
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"));
+    }
+
+    @Test
+    public void testAddProduct_PriceWithTooManyIntegerDigits() throws Exception {
+        mockMvc.perform(post("/product/new")
+                        .param("name", "Valid Product Name")
+                        .param("description", "Valid Description")
+                        .param("price", "12345678901234567.89"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"));
+    }
+
+    @Test
+    public void testAddProduct_PriceWithTooManyFractionalDigits() throws Exception {
+        mockMvc.perform(post("/product/new")
+                        .param("name", "Valid Product Name")
+                        .param("description", "Valid Description")
+                        .param("price", "10.123")) // invalid price (too many fractional digits)
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"));
+    }
+
 }
