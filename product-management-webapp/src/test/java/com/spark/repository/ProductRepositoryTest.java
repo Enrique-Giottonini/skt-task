@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,7 +85,7 @@ public class ProductRepositoryTest {
         productRepository.replaceAll(initialList);
 
         // Act
-        productRepository.replaceAll(new ArrayList<>());
+        productRepository.replaceAll(Collections.emptyList());
 
         // Assert
         List<ProductDTO> products = productRepository.findAll();

@@ -2,6 +2,7 @@ package com.spark.service;
 
 import com.spark.ProductRepository;
 import com.spark.entities.domain.ProductDTO;
+import com.spark.entities.domain.ProductListMessage;
 import com.spark.entities.domain.ProductMessage;
 import com.spark.events.KafkaCallback;
 import com.spark.impl.ProductServiceImpl;
@@ -15,19 +16,18 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class ProductServiceImplTest {
 
     @Mock private ProductRepository productRepository;
-    @Mock private KafkaTemplate<String, ProductMessage> kafkaTemplate;
-    @Mock private ListenableFuture<SendResult<String, ProductMessage>> future;
+    @Mock private KafkaTemplate<String, Object> kafkaTemplate;
+    @Mock private ListenableFuture<SendResult<String, Object>> future;
 
     @InjectMocks
     private ProductServiceImpl productService;
@@ -41,7 +41,6 @@ public class ProductServiceImplTest {
 
         // Act
         List<ProductDTO> products = productService.findAll();
-
 
         // Assert
         assertThat(products).isEqualTo(productList);
@@ -80,15 +79,37 @@ public class ProductServiceImplTest {
     }
 
     @Test(expected = KafkaException.class)
-    public void testSendToProcess_KafkaException() {
+    public void testSendToProcess_ThrowsKafkaException() {
         // Arrange
         ProductDTO product = new ProductDTO();
-
         ProductMessage message = new ProductMessage("product.creation", product);
-        when(kafkaTemplate.send("product", message)).thenReturn(future);
-        doThrow(new KafkaException("Kafka error")).when(kafkaTemplate).send("product", message);
+        doThrow(KafkaException.class).when(kafkaTemplate).send("product", message);
 
         // Act
         productService.sendToProcess(product);
+    }
+
+
+    @Test
+    public void testRequestList_Success() {
+        // Arrange
+        ProductListMessage message = new ProductListMessage("list.subscribe", Collections.emptyList());
+        when(kafkaTemplate.send("listOfProducts", message))
+                .thenReturn(future);
+        // Act
+        productService.requestList();
+
+        // Assert
+        verify(kafkaTemplate, times(1)).send(eq("listOfProducts"), eq(message));
+        verify(future, times(1)).addCallback(any(KafkaCallback.class));
+    }
+
+    @Test(expected = KafkaException.class)
+    public void testRequestList_ThrowsKafkaException() {
+        // Arrange
+        ProductListMessage message = new ProductListMessage("list.subscribe", Collections.emptyList());
+        doThrow(mock(KafkaException.class)).when(kafkaTemplate).send("listOfProducts", message);
+        // Act
+        productService.requestList();
     }
 }

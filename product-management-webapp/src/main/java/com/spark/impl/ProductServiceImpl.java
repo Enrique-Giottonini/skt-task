@@ -5,7 +5,6 @@ import com.spark.ProductService;
 import com.spark.entities.domain.ProductDTO;
 import com.spark.entities.domain.ProductListMessage;
 import com.spark.entities.domain.ProductMessage;
-import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import com.spark.events.KafkaCallback;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +13,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -51,8 +48,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public void requestList() {
-        ProductListMessage payload = new ProductListMessage("list.subscribe", new ArrayList<>());
-        ListenableFuture<SendResult<String, ProductListMessage>> future = productListMessageKafkaTemplate.send("listOfProducts", payload);
-        future.addCallback(new KafkaCallback<>(payload));
+        try {
+            ProductListMessage payload = new ProductListMessage("list.subscribe", Collections.emptyList());
+            ListenableFuture<SendResult<String, ProductListMessage>> future = productListMessageKafkaTemplate.send("listOfProducts", payload);
+            future.addCallback(new KafkaCallback<>(payload));
+        } catch (KafkaException e) {
+            log.error("Error sending message to Kafka: {}", e.getMessage());
+            throw e;
+        }
     }
 }
