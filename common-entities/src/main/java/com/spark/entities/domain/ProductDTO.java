@@ -2,6 +2,7 @@ package com.spark.entities.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Generated
 public class ProductDTO {
 
     private long id;

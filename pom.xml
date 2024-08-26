@@ -69,7 +69,6 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>com/spark/entities/domain/**</exclude>
                         <exclude>**/config/*</exclude>
                         <exclude>com/spark/service/products/entities/*</exclude>
                     </excludes>
