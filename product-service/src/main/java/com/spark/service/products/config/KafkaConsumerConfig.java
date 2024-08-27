@@ -22,8 +22,30 @@
         @EnableKafka
         public class KafkaConsumerConfig {
 
-            @Value(value = "${kafka.bootstrapAddress}")
+            @Value("${kafka.bootstrapAddress}")
             private String bootstrapAddress;
+
+            @Value("${kafka.consumer.enable-auto-commit}")
+            private boolean enableAutoCommit;
+
+            @Value("${kafka.consumer.auto-commit-interval-ms}")
+            private String autoCommitIntervalMs;
+
+            @Value("${kafka.consumer.session-timeout-ms}")
+            private String sessionTimeoutMs;
+
+            @Value("${kafka.consumer.key-deserializer}")
+            private String keyDeserializer;
+
+            @Value("${kafka.consumer.value-deserializer}")
+            private String valueDeserializer;
+
+            @Value("${kafka.consumer.group-id}")
+            private String groupId;
+
+            @Value("${kafka.consumer.auto-offset-reset}")
+            private String autoOffsetReset;
+
 
             @Bean
                 KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, ProductMessage>> productKafkaListenerContainerFactory() {
@@ -58,14 +80,13 @@
             public Map<String, Object> consumerConfigs() {
                 Map<String, Object> props = new HashMap<>();
                 props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-                props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-                props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "100");
-                props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "15000");
-                props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-                props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-                props.put(ConsumerConfig.GROUP_ID_CONFIG, "productDb");
-                props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-                props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+                props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
+                props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, autoCommitIntervalMs);
+                props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeoutMs);
+                props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
+                props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
+                props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+                props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
                 return props;
             }
         }

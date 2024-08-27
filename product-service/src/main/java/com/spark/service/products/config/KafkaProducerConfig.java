@@ -20,8 +20,26 @@ import java.util.Map;
 @EnableKafka
 public class KafkaProducerConfig {
 
-    @Value(value = "${kafka.bootstrapAddress}")
+    @Value("${kafka.bootstrapAddress}")
     private String bootstrapAddress;
+
+    @Value("${kafka.producer.retries}")
+    private int retries;
+
+    @Value("${kafka.producer.batch-size}")
+    private int batchSize;
+
+    @Value("${kafka.producer.linger-ms}")
+    private int lingerMs;
+
+    @Value("${kafka.producer.buffer-memory}")
+    private long bufferMemory;
+
+    @Value("${kafka.producer.key-serializer}")
+    private String keySerializer;
+
+    @Value("${kafka.producer.value-serializer}")
+    private String valueSerializer;
 
     @Bean
     public ProducerFactory<String, ProductListMessage> producerFactory() {
@@ -32,12 +50,12 @@ public class KafkaProducerConfig {
     public Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        props.put(ProducerConfig.RETRIES_CONFIG, 0);
-        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
-        props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
-        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        props.put(ProducerConfig.RETRIES_CONFIG, retries);
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, batchSize);
+        props.put(ProducerConfig.LINGER_MS_CONFIG, lingerMs);
+        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, bufferMemory);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);
         return props;
     }
 

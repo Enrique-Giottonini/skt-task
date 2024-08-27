@@ -23,16 +23,37 @@ public class KafkaProducerConfig {
     @Value(value = "${kafka.bootstrapAddress}")
     private String bootstrapAddress;
 
+    @Value("${kafka.retries}")
+    private int retries;
+
+    @Value("${kafka.batch-size}")
+    private int batchSize;
+
+    @Value("${kafka.linger-ms}")
+    private int lingerMs;
+
+    @Value("${kafka.buffer-memory}")
+    private long bufferMemory;
+
+    @Value("${kafka.max-block-ms}")
+    private int maxBlockMs;
+
+    @Value("${kafka.key-serializer}")
+    private String keySerializer;
+
+    @Value("${kafka.value-serializer}")
+    private String valueSerializer;
+
     private Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        props.put(ProducerConfig.RETRIES_CONFIG, 1);
-        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
-        props.put(ProducerConfig.LINGER_MS_CONFIG, 0);
-        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
-        props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 5000);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.RETRIES_CONFIG, retries);
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, batchSize);
+        props.put(ProducerConfig.LINGER_MS_CONFIG, lingerMs);
+        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, bufferMemory);
+        props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, maxBlockMs);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);
         return props;
     }
 
