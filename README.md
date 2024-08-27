@@ -38,6 +38,7 @@ KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 docker compose up -d
 
 mvn clean package
+java -jar config-server/target/config-server-1.0-SNAPSHOT.jar       
 java -jar product-management-webapp/target/product-management-webapp-1.0-SNAPSHOT.war          
 java -jar product-service/target/product-service-1.0-SNAPSHOT.jar   
 

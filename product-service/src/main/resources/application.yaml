@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: productservice
+  config:
+    config:
+      uri: http://localhost:8888
