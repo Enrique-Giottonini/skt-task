@@ -12,8 +12,16 @@ services:
     image: confluentinc/cp-kafka:latest
     ports:
       - "1234:29092"
-    env_file:
-      - kafka.env
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://stk-task-kafka:9092,PLAINTEXT_HOST://localhost:1234
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     depends_on:
       zookeeper:
         condition: service_started
@@ -43,8 +51,11 @@ services:
       - '3333:1433'
     container_name: db-product-service-mssql
     restart: always
-    env_file:
-      - product-service/sqlserver.env
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: Sg.0s5+39?D)
+      MSSQL_TCP_PORT: 1433
     volumes:
       - ./product-service/data/mssql/data:/var/opt/mssql/data
       - ./product-service/data/mssql/log:/var/opt/mssql/log
