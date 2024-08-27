@@ -23,25 +23,25 @@ public class KafkaProducerConfig {
     @Value(value = "${kafka.bootstrapAddress}")
     private String bootstrapAddress;
 
-    @Value("${kafka.retries}")
+    @Value("${kafka.producer.retries}")
     private int retries;
 
-    @Value("${kafka.batch-size}")
+    @Value("${kafka.producer.batch-size}")
     private int batchSize;
 
-    @Value("${kafka.linger-ms}")
+    @Value("${kafka.producer.linger-ms}")
     private int lingerMs;
 
-    @Value("${kafka.buffer-memory}")
+    @Value("${kafka.producer.buffer-memory}")
     private long bufferMemory;
 
-    @Value("${kafka.max-block-ms}")
+    @Value("${kafka.producer.max-block-ms}")
     private int maxBlockMs;
 
-    @Value("${kafka.key-serializer}")
+    @Value("${kafka.producer.key-serializer}")
     private String keySerializer;
 
-    @Value("${kafka.value-serializer}")
+    @Value("${kafka.producer.value-serializer}")
     private String valueSerializer;
 
     private Map<String, Object> producerConfigs() {

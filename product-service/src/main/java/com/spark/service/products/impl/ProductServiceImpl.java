@@ -11,6 +11,7 @@ import com.spark.service.products.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.DataException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -31,6 +32,9 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final KafkaTemplate<String, ProductListMessage> kafkaTemplate;
+
+    @Value("${kafka.topics.list}")
+    private String listTopic;
 
     public void addProduct(ProductDTO dto) {
         try {
@@ -57,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
             List<Product> products = productRepository.getAllProducts();
             List<ProductDTO> productDTOs = productMapper.toProductDtoList(products);
             ProductListMessage message = new ProductListMessage(messageType, productDTOs);
-            ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send("listOfProducts", message);
+            ListenableFuture<SendResult<String, ProductListMessage>> future = kafkaTemplate.send(listTopic, message);
             future.addCallback(new KafkaCallback<>(message)); // For logging
         } catch (DataAccessException e) {
             log.error("Error accessing data from the repository: {}", e.getMessage());

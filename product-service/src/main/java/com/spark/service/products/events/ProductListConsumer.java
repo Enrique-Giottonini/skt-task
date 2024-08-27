@@ -16,7 +16,7 @@ public class ProductListConsumer {
 
     private final ProductService productService;
 
-    @KafkaListener(id = "productListService", topics = "listOfProducts", containerFactory = "productListKafkaListenerContainerFactory")
+    @KafkaListener(id = "productListService", topics = "${kafka.topics.list}", containerFactory = "productListKafkaListenerContainerFactory")
     public void consume(ProductListMessage payload) {
         log.info("Received payload in listOfProducts");
 

@@ -9,6 +9,7 @@ import com.spark.entities.domain.exceptions.ProductDtoValidationException;
 import com.spark.service.products.impl.ProductServiceImpl;
 import com.spark.service.products.mapper.ProductMapper;
 import org.hibernate.exception.DataException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,6 +20,7 @@ import org.springframework.dao.DataAccessException;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import javax.validation.ConstraintViolationException;
@@ -35,9 +37,15 @@ public class ProductServiceImplTest {
     @Mock private KafkaTemplate<String, ProductListMessage> kafkaTemplate;
     @Mock private ProductMapper productMapper;
     @Mock private ListenableFuture<SendResult<String, ProductListMessage>> future;
+    private final String listTopic = "listOfProducts";
 
     @InjectMocks
     private ProductServiceImpl productService;
+
+    @Before
+    public void setUp() {
+        ReflectionTestUtils.setField(productService, "listTopic", listTopic);
+    }
 
     @Test
     public void testAddProduct_Success() {
@@ -112,7 +120,7 @@ public class ProductServiceImplTest {
 
         when(productRepository.getAllProducts()).thenReturn(products);
         when(productMapper.toProductDtoList(products)).thenReturn(productDTOs);
-        when(kafkaTemplate.send("listOfProducts", message)).thenReturn(future);
+        when(kafkaTemplate.send(listTopic, message)).thenReturn(future);
 
         // Act
         productService.notifyUpdatedList();
@@ -120,7 +128,7 @@ public class ProductServiceImplTest {
         // Assert
         verify(productRepository, times(1)).getAllProducts();
         verify(productMapper, times(1)).toProductDtoList(products);
-        verify(kafkaTemplate, times(1)).send("listOfProducts", message);
+        verify(kafkaTemplate, times(1)).send(listTopic, message);
         verify(future, times(1)).addCallback(any(KafkaCallback.class));
     }
 
@@ -142,7 +150,7 @@ public class ProductServiceImplTest {
 
         when(productRepository.getAllProducts()).thenReturn(products);
         when(productMapper.toProductDtoList(products)).thenReturn(productDTOs);
-        doThrow(new KafkaException("Kafka error")).when(kafkaTemplate).send("listOfProducts", message);
+        doThrow(new KafkaException("Kafka error")).when(kafkaTemplate).send(listTopic, message);
 
         // Act
         productService.notifyUpdatedList();
@@ -157,7 +165,7 @@ public class ProductServiceImplTest {
 
         when(productRepository.getAllProducts()).thenReturn(products);
         when(productMapper.toProductDtoList(products)).thenReturn(productDTOs);
-        when(kafkaTemplate.send("listOfProducts", message)).thenReturn(future);
+        when(kafkaTemplate.send(listTopic, message)).thenReturn(future);
 
         // Act
         productService.resendList();
@@ -165,7 +173,7 @@ public class ProductServiceImplTest {
         // Assert
         verify(productRepository, times(1)).getAllProducts();
         verify(productMapper, times(1)).toProductDtoList(products);
-        verify(kafkaTemplate, times(1)).send("listOfProducts", message);
+        verify(kafkaTemplate, times(1)).send(listTopic, message);
         verify(future, times(1)).addCallback(any(KafkaCallback.class));
     }
 
@@ -187,7 +195,7 @@ public class ProductServiceImplTest {
 
         when(productRepository.getAllProducts()).thenReturn(products);
         when(productMapper.toProductDtoList(products)).thenReturn(productDTOs);
-        doThrow(new KafkaException("Kafka error")).when(kafkaTemplate).send("listOfProducts", message);
+        doThrow(new KafkaException("Kafka error")).when(kafkaTemplate).send(listTopic, message);
 
         // Act
         productService.resendList();

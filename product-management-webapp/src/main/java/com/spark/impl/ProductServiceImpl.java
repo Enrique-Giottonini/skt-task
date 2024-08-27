@@ -9,6 +9,7 @@ import com.spark.events.KafkaCallback;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,12 @@ public class ProductServiceImpl implements ProductService {
     private final KafkaTemplate<String, ProductMessage> productMessageKafkaTemplate;
     private final KafkaTemplate<String, ProductListMessage> productListMessageKafkaTemplate;
 
+    @Value("${kafka.topics.list}")
+    private String listTopic;
+
+    @Value("${kafka.topics.product}")
+    private String productTopic;
+
     public List<ProductDTO> findAll() {
         return productRepository.findAll();
     }
@@ -36,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
     public void sendToProcess(ProductDTO product) {
         try {
             ProductMessage message = new ProductMessage("product.creation", product);
-            ListenableFuture<SendResult<String, ProductMessage>> future = productMessageKafkaTemplate.send("product", message);
+            ListenableFuture<SendResult<String, ProductMessage>> future = productMessageKafkaTemplate.send(productTopic, message);
             future.addCallback(new KafkaCallback<>(message));
             future.get();
         } catch (ExecutionException e) {
@@ -54,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
     public void requestList() {
         try {
             ProductListMessage payload = new ProductListMessage("list.subscribe", Collections.emptyList());
-            ListenableFuture<SendResult<String, ProductListMessage>> future = productListMessageKafkaTemplate.send("listOfProducts", payload);
+            ListenableFuture<SendResult<String, ProductListMessage>> future = productListMessageKafkaTemplate.send(listTopic, payload);
             future.addCallback(new KafkaCallback<>(payload));
         } catch (KafkaException e) {
             log.error("Error sending message to Kafka: {}", e.getMessage());

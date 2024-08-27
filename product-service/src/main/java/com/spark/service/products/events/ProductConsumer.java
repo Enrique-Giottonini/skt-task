@@ -18,7 +18,7 @@ public class ProductConsumer {
 
     private final ProductService productService;
 
-    @KafkaListener(id = "productsService", topics = "product", containerFactory = "productKafkaListenerContainerFactory")
+    @KafkaListener(id = "productsService", topics = "${kafka.topics.product}", containerFactory = "productKafkaListenerContainerFactory")
     public void consume(ProductMessage payload) {
         log.info("Received a new message");
         if (payload != null && "product.creation".equals(payload.getAction()) && payload.getProduct() != null) {

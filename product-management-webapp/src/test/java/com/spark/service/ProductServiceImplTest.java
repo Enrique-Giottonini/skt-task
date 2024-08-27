@@ -6,6 +6,7 @@ import com.spark.entities.domain.ProductListMessage;
 import com.spark.entities.domain.ProductMessage;
 import com.spark.events.KafkaCallback;
 import com.spark.impl.ProductServiceImpl;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -14,6 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -28,9 +30,17 @@ public class ProductServiceImplTest {
     @Mock private ProductRepository productRepository;
     @Mock private KafkaTemplate<String, Object> kafkaTemplate;
     @Mock private ListenableFuture<SendResult<String, Object>> future;
+    private final String listTopic = "listOfProducts";
+    private final String productTopic = "product";
 
     @InjectMocks
     private ProductServiceImpl productService;
+
+    @Before
+    public void setUp() {
+        ReflectionTestUtils.setField(productService, "listTopic", listTopic);
+        ReflectionTestUtils.setField(productService, "productTopic", productTopic);
+    }
 
     @Test
     public void testFindAll_Success() {
@@ -68,13 +78,13 @@ public class ProductServiceImplTest {
         product.setPrice(new BigDecimal("9.99"));
 
         ProductMessage message = new ProductMessage("product.creation", product);
-        when(kafkaTemplate.send("product", message)).thenReturn(future);
+        when(kafkaTemplate.send(productTopic, message)).thenReturn(future);
 
         // Act
         productService.sendToProcess(product);
 
         // Assert
-        verify(kafkaTemplate, times(1)).send(eq("product"), eq(message));
+        verify(kafkaTemplate, times(1)).send(eq(productTopic), eq(message));
         verify(future, times(1)).addCallback(any(KafkaCallback.class));
     }
 
@@ -94,13 +104,13 @@ public class ProductServiceImplTest {
     public void testRequestList_Success() {
         // Arrange
         ProductListMessage message = new ProductListMessage("list.subscribe", Collections.emptyList());
-        when(kafkaTemplate.send("listOfProducts", message))
+        when(kafkaTemplate.send(listTopic, message))
                 .thenReturn(future);
         // Act
         productService.requestList();
 
         // Assert
-        verify(kafkaTemplate, times(1)).send(eq("listOfProducts"), eq(message));
+        verify(kafkaTemplate, times(1)).send(eq(listTopic), eq(message));
         verify(future, times(1)).addCallback(any(KafkaCallback.class));
     }
 
@@ -108,7 +118,7 @@ public class ProductServiceImplTest {
     public void testRequestList_ThrowsKafkaException() {
         // Arrange
         ProductListMessage message = new ProductListMessage("list.subscribe", Collections.emptyList());
-        doThrow(mock(KafkaException.class)).when(kafkaTemplate).send("listOfProducts", message);
+        doThrow(mock(KafkaException.class)).when(kafkaTemplate).send(listTopic, message);
         // Act
         productService.requestList();
     }
